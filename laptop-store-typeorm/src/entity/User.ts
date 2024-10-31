@@ -1,29 +1,28 @@
-import { Entity, ObjectIdColumn, ObjectId, Column } from "typeorm"
-// id, name, email, password, isAdmin, phone, createdAt, updatedAt
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ObjectIdColumn } from "typeorm";
+
 @Entity()
 export class User {
-    
     @ObjectIdColumn()
-    id: ObjectId
+    id!: number;
 
     @Column()
-    name: string
+    name!: string;
 
     @Column()
-    email: string
+    email!: string;
 
     @Column()
-    password: string
+    password!: string;
 
-    // @Column()
-    // isAdmin:boolean
+    @Column({ default: false })
+    isAdmin!: boolean;
 
-    // @Column()
-    // phone:string
+    @Column()
+    phone!: string;
 
-    // @Column()
-    // createdAt:Date
+    @CreateDateColumn() // Tự động tạo ngày
+    createdAt!: Date;
 
-    // @Column()
-    // updatedAt:Date
+    @UpdateDateColumn() // Tự động cập nhật ngày
+    updatedAt!: Date;
 }

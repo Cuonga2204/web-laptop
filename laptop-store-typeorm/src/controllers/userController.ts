@@ -6,7 +6,7 @@ import { UserService } from "../services/userService";
 export const createUser = async (req: Request, res: Response) => {
     try {
         const { name, email, password, confirmPassword, phone } = req.body;
-
+        
         // Kiểm tra các trường bắt buộc
         if (!name || !email || !password || !confirmPassword || !phone) {
             return res.status(400).json({
@@ -33,14 +33,15 @@ export const createUser = async (req: Request, res: Response) => {
         }
 
         // Gọi hàm createUser từ UserService để tạo người dùng mới
-        const response = await UserService.createUser(req.body);
-
-        return res.status(201).json(response);
+        const response = await UserService.createUser({ name, email, password, phone });
+        console.log(response);
+        
+        return res.status(200).json(response);
     } catch (error) {
         console.error("Error creating user:", error);
         return res.status(500).json({
             status: 'ERR',
-            message: "Error creating user"
+            message: "Error creating user controller"
         });
     }
 };

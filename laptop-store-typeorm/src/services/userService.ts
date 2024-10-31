@@ -1,26 +1,21 @@
 import { User } from "../entity/User";
 import { AppDataSource } from "../config/data-source";
-import { Repository } from "typeorm";
-import bcrypt from "bcrypt";
-
-interface NewUser {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    phone: string;
-}
 
 export class UserService {
-    private static userRepository: Repository<User> = AppDataSource.getRepository(User);
-
-    static async createUser(newUser: NewUser) {
-        const { name, email, password, phone } = newUser;
-
+    static async createUser(userData: { name: string; email: string; password: string; phone: string }) {
+        const { name, email, password, phone } = userData;
         try {
-            console.log(`test UserService`);
-            // Kiểm tra xem email đã tồn tại hay chưa
-            const existingUser = await this.userRepository.findOneBy({ email });
+            const userRepository = AppDataSource.getRepository(User);
+            const newUser = userRepository.create({
+                name,
+                email,
+                password,
+                phone,
+                isAdmin: false // Giá trị mặc định
+            });
+    
+            const existingUser = await userRepository.findOneBy({ email: email });
+
             if (existingUser) {
                 return {
                     status: 'OK',
@@ -28,28 +23,16 @@ export class UserService {
                 };
             }
 
-            // Hash mật khẩu
-            const hash = bcrypt.hashSync(password, 10);
-
-            // Tạo user mới
-            const createdUser = this.userRepository.create({
-                name,
-                email,
-                password: hash,
-                phone
-            });
-
-            // Lưu user vào database
-            await this.userRepository.save(createdUser);
+            await userRepository.save(newUser);
 
             return {
                 status: 'OK',
                 message: 'CREATE SUCCESS',
-                data: createdUser
             };
 
         } catch (error) {
-            throw new Error(`Error creating user: ${error}`);
+            console.log("Error creating user in service:", error);
+            throw new Error(`Error creating user service: ${error}`);
         }
     }
 }
